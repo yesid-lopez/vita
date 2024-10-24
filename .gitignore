@@ -13,3 +13,4 @@ volumes
 
 secrets.yaml
 chart/charts
+state/quix-stream-processor/*
