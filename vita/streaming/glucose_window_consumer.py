@@ -10,7 +10,7 @@ consumer = KafkaConsumer(
     auto_offset_reset="earliest",
     enable_auto_commit=False,
 )
-consumer.subscribe("glucose")
+consumer.subscribe("glucose-window")
 
 for message in consumer:
     topic_info = f"topic: {message.topic} ({message.partition}|{message.offset})"

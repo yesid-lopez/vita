@@ -26,5 +26,4 @@ def reducer(aggregated: dict, value: dict) -> dict:
 def custom_ts_extractor(value, headers=None, partition=0, timestamp_type=None):
     milliseconds = int(value["ts"] * 1000)
     value["timestamp"] = milliseconds
-    logger.info(f"Value of new timestamp is: {value['timestamp']}")
     return value["timestamp"]
