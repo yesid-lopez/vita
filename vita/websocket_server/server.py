@@ -8,7 +8,7 @@ from vita.utils.config import WEBSOCKET_HOST, WEBSOCKET_PORT
 clients = set()
 
 
-async def echo(websocket):
+async def handler(websocket):
     try:
         clients.add(websocket)
         async for message in websocket:
@@ -23,7 +23,7 @@ async def echo(websocket):
 
 
 async def main():
-    async with serve(echo, WEBSOCKET_HOST, WEBSOCKET_PORT):
+    async with serve(handler, WEBSOCKET_HOST, WEBSOCKET_PORT):
         await asyncio.get_running_loop().create_future()  # run forever
 
 asyncio.run(main())
