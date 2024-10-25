@@ -11,7 +11,6 @@ clients = set()
 async def echo(websocket):
     try:
         clients.add(websocket)
-        print(f"websocket: {websocket}")
         async for message in websocket:
             print(f"Received: {message}")
             for client in clients:
