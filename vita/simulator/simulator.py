@@ -3,7 +3,7 @@ from datetime import datetime
 
 import gymnasium
 from gymnasium.envs.registration import register
-from kafka_client import send, stop_producer
+from vita.simulator.blood_glucose_producer import BloodGlucoseProducer
 
 register(
     id="simglucose/adolescent2-v0",
@@ -23,6 +23,7 @@ steps_per_episode = (hours_per_episode * 60) // minutes_per_step
 
 # Set max_episode_steps based on desired length of episode
 env.spec.max_episode_steps = steps_per_episode
+bg_producer = BloodGlucoseProducer()
 
 episode = 1
 while True:
@@ -33,10 +34,11 @@ while True:
         action = env.action_space.sample()
         observation, reward, terminated, truncated, info = env.step(action)
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(
-            f"[{current_time}] Episode {episode} - Step {t}: observation {observation}, reward {reward}, terminated {terminated}, truncated {truncated}, info {info}"
-        )
-        send(observation[0], ts=info["time"].timestamp())
+        data = {
+            "bg": observation[0],
+            "ts": info["time"].timestamp(),
+        }
+        bg_producer.send_blood_glucose(str(data))
 
         t += 1
         time.sleep(2)
@@ -53,4 +55,4 @@ while True:
     if episode > 7:
         break
 
-stop_producer()
+bg_producer.stop_producer()

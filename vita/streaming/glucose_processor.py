@@ -2,11 +2,11 @@ from datetime import timedelta
 
 from quixstreams import Application
 
-from vita.clients.kafka_client import connection
 from vita.clients.websocket_client import send
 from vita.streaming.reducers.glucose_reducer import (custom_ts_extractor,
                                                      initializer, reducer)
 from vita.utils.config import KAFKA_TOPIC
+from vita.utils.quix_kafka_connection import connection
 from vita.utils.logger import logging
 
 logger = logging.getLogger(__name__)
