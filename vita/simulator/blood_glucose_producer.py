@@ -1,4 +1,4 @@
-from vita.utils.base_kafka_producer import BaseKafkaProducer
+from vita.utils.base_producer import BaseKafkaProducer
 from vita.utils.logger import logging
 
 logger = logging.getLogger(__name__)

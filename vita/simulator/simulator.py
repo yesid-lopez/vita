@@ -34,9 +34,10 @@ while True:
         action = env.action_space.sample()
         observation, reward, terminated, truncated, info = env.step(action)
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        blood_time = info["time"]
         data = {
             "bg": float(observation[0]),
-            "ts": info["time"].timestamp(),
+            "ts": blood_time.timestamp(),
         }
         bg_producer.send_blood_glucose(data)
 

@@ -28,8 +28,8 @@ async def handler(websocket):
 
 async def main():
     async with serve(handler, WEBSOCKET_HOST, WEBSOCKET_PORT):
-        logger.info(
-            f"Server started at ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}")
+        logger.info(f"Server started at ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}")
         await asyncio.get_running_loop().create_future()  # run forever
+
 
 asyncio.run(main())
