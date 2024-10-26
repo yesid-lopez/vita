@@ -1,11 +1,12 @@
+import json
 from collections import deque
 
 from kafka import KafkaConsumer
+from websockets.sync.client import connect
 
-from vita.clients.websocket_client import send
 from vita.utils.config import (KAFKA_BROKER, KAFKA_PASSWORD,
                                KAFKA_SASL_MECHANISM, KAFKA_SECURITY_PROTOCOL,
-                               KAFKA_USERNAME)
+                               KAFKA_USERNAME, WEBSOCKET_URI)
 from vita.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -27,14 +28,16 @@ consumer.subscribe(TOPICS)
 
 glucose_buffer = deque(maxlen=6)
 
+# Establish WebSocket connection once
+with connect(WEBSOCKET_URI) as websocket:
+    logger.info(f"Websocket server connected to {WEBSOCKET_URI}")
 
-def handle_event(topic, message):
-    logger.info(f"Received message from topic {topic}: {message}")
-    if topic == "glucose":
-        glucose_buffer.append(message)
-        logger.info(f"Buffer: {glucose_buffer}")
-        send(list(glucose_buffer))
+    def handle_event(topic, message):
+        logger.info(f"Received message from topic {topic}: {message}")
+        if topic == "glucose":
+            glucose_buffer.append(message)
+            logger.info(f"Buffer: {glucose_buffer}")
+            websocket.send(json.dumps(list(glucose_buffer)))
 
-
-for message in consumer:
-    handle_event(message.topic, message.value)
+    for message in consumer:
+        handle_event(message.topic, message.value)
