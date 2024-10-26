@@ -12,5 +12,4 @@ volumes
 *.json
 
 secrets.yaml
-chart/charts
 state/

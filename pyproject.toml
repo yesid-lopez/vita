@@ -17,6 +17,7 @@ quixstreams = "^3.1.0"
 
 [tool.poetry.group.websocket-server.dependencies]
 websocket = "^0.2.1"
+python-dotenv = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core"]

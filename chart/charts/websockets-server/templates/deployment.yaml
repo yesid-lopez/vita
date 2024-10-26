@@ -19,17 +19,18 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "vita/websocket_server/server.py"]
           env:
-          - name: OPENAI_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: openai
-                key: key
+            - name: WEBSOCKET_HOST
+              value: "{{ .Values.websocket.host }}"
+            - name: WEBSOCKET_PORT
+              value: "{{ .Values.websocket.port }}"
+          # - name: OPENAI_API_KEY
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: openai
+          #       key: key
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            - containerPort: {{ .Values.service.port }}
       imagePullSecrets:
         - name: my-registry-secret
