@@ -1,4 +1,6 @@
 
+import json
+
 from kafka import KafkaProducer
 
 from vita.utils.config import (KAFKA_BROKER, KAFKA_PASSWORD,
@@ -14,6 +16,7 @@ class BaseKafkaProducer:
             sasl_mechanism=KAFKA_SASL_MECHANISM,
             sasl_plain_username=KAFKA_USERNAME,
             sasl_plain_password=KAFKA_PASSWORD,
+            value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
         self.topic = topic
 

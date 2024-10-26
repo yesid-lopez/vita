@@ -1,5 +1,3 @@
-import json
-
 from vita.utils.base_kafka_producer import BaseKafkaProducer
 from vita.utils.logger import logging
 
@@ -16,5 +14,5 @@ class BloodGlucoseProducer(BaseKafkaProducer):
         self.producer.send(
             "glucose",
             key=self.hostname,
-            value=json.dumps(blood_glucose).encode("utf-8"),
+            value=blood_glucose,
         )

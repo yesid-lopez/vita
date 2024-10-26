@@ -35,10 +35,10 @@ while True:
         observation, reward, terminated, truncated, info = env.step(action)
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = {
-            "bg": observation[0],
+            "bg": float(observation[0]),
             "ts": info["time"].timestamp(),
         }
-        bg_producer.send_blood_glucose(str(data))
+        bg_producer.send_blood_glucose(data)
 
         t += 1
         time.sleep(2)
