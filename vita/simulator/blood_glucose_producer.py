@@ -1,10 +1,10 @@
-from vita.utils.base_producer import BaseKafkaProducer
+from vita.utils.base_producer import BaseProducer
 from vita.utils.logger import logging
 
 logger = logging.getLogger(__name__)
 
 
-class BloodGlucoseProducer(BaseKafkaProducer):
+class BloodGlucoseProducer(BaseProducer):
     def __init__(self):
         super().__init__(topic="glucose")
         self.hostname = str.encode("glucose-device")
