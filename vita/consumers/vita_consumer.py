@@ -11,7 +11,7 @@ from vita.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-TOPICS = ["glucose"]
+TOPICS = ["glucose", "risk"]
 
 consumer = KafkaConsumer(
     bootstrap_servers=KAFKA_BROKER,
@@ -33,11 +33,21 @@ with connect(WEBSOCKET_URI) as websocket:
     logger.info(f"Websocket server connected to {WEBSOCKET_URI}")
 
     def handle_event(topic, message):
-        logger.info(f"Received message from topic {topic}: {message}")
+        logger.info(f"Received message from topic {topic}")
         if topic == "glucose":
             glucose_buffer.append(message)
-            logger.info(f"Buffer: {glucose_buffer}")
-            websocket.send(json.dumps(list(glucose_buffer)))
-
+            payload = {
+                "type": "glucose_data",
+                "data": list(glucose_buffer),
+            }
+            logger.info(payload)
+            websocket.send(json.dumps(payload))
+        if topic == "risk":
+            payload = {
+                "type": "alert",
+                "data": message,
+            }
+            logger.info(payload)
+            websocket.send(json.dumps(payload))
     for message in consumer:
         handle_event(message.topic, message.value)

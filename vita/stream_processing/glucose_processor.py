@@ -32,7 +32,6 @@ output_topic = app.topic(
 )
 
 sdf = app.dataframe(input_topic)
-sdf = sdf.update(lambda value: logger.info(f"Input value: {value}"))
 
 sdf = (
     sdf.tumbling_window(timedelta(minutes=10))
@@ -46,6 +45,7 @@ sdf = sdf.apply(
         "glucose": value["value"],
     }
 )
+sdf = sdf.update(lambda value: logger.info(f"Window: {value}"))
 
 sdf = sdf.to_topic(output_topic)
 
