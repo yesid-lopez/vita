@@ -65,5 +65,24 @@ spec:
               value: "{{ .Values.kafka.password }}"
           ports:
             - containerPort: {{ .Values.service.port }}
+        - name: {{ .Chart.Name }}-connect
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["rpk", "connect", "run", "risk_analysis.yaml"]
+          env:
+            - name: KAFKA_BROKER
+              value: "{{ .Values.kafka.broker }}"
+            - name: KAFKA_TOPIC
+              value: "{{ .Values.websocket.topic }}"
+            - name: KAFKA_SASL_MECHANISM
+              value: "{{ .Values.kafka.sasl.mechanism }}"
+            - name: KAFKA_USERNAME
+              value: "{{ .Values.kafka.username }}"
+            - name: KAFKA_PASSWORD
+              value: "{{ .Values.kafka.password }}"
+            - name: OPENAI_API_KEY
+              value: "{{ .Values.openai.api_key }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
       imagePullSecrets:
         - name: my-registry-secret
