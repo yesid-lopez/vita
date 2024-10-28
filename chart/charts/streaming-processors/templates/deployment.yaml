@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName}}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        name: {{ .Values.appName }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-simulator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "vita/simulator/simulator.py"]
+          env:
+            - name: KAFKA_BROKER
+              value: "{{ .Values.kafka.broker }}"
+            - name: KAFKA_TOPIC
+              value: "{{ .Values.websocket.topic }}"
+            - name: KAFKA_SASL_MECHANISM
+              value: "{{ .Values.kafka.sasl.mechanism }}"
+            - name: KAFKA_USERNAME
+              value: "{{ .Values.kafka.username }}"
+            - name: KAFKA_PASSWORD
+              value: "{{ .Values.kafka.password }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+        - name: {{ .Chart.Name }}-consumer
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "vita/consumers/vita_consumer.py"]
+          env:
+            - name: KAFKA_BROKER
+              value: "{{ .Values.kafka.broker }}"
+            - name: KAFKA_TOPIC
+              value: "{{ .Values.websocket.topic }}"
+            - name: KAFKA_SASL_MECHANISM
+              value: "{{ .Values.kafka.sasl.mechanism }}"
+            - name: KAFKA_USERNAME
+              value: "{{ .Values.kafka.username }}"
+            - name: KAFKA_PASSWORD
+              value: "{{ .Values.kafka.password }}"
+        - name: {{ .Chart.Name }}-processor
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "vita/stream_processing/glucose_processor.py"]
+          env:
+            - name: KAFKA_BROKER
+              value: "{{ .Values.kafka.broker }}"
+            - name: KAFKA_TOPIC
+              value: "{{ .Values.websocket.topic }}"
+            - name: KAFKA_SASL_MECHANISM
+              value: "{{ .Values.kafka.sasl.mechanism }}"
+            - name: KAFKA_USERNAME
+              value: "{{ .Values.kafka.username }}"
+            - name: KAFKA_PASSWORD
+              value: "{{ .Values.kafka.password }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+      imagePullSecrets:
+        - name: my-registry-secret

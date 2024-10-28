@@ -1,0 +1,49 @@
+
+input:
+  label: glucose
+  kafka:
+    addresses: [ "${KAFKA_BROKER}" ]
+    topics: [ glucose-window ]
+    consumer_group: "glucose-consumer"
+    tls:
+      enabled: true
+    sasl:
+      mechanism: "${KAFKA_SASL_MECHANISM}"
+      user: "${KAFKA_USERNAME}"
+      password: "${KAFKA_PASSWORD}"
+
+pipeline:
+  processors:
+  - branch: 
+      processors:
+        - openai_chat_completion:
+            server_address: https://api.openai.com/v1
+            api_key: "${OPENAI_API_KEY}" # No default (required)
+            model: gpt-4o
+            prompt: |
+              Consider the glucose level ${!this.glucose.mean}
+              
+              Give me specific advice on how to improve the glucose level in less than 2 short sentences.
+      result_map: |
+        root.advice = content().string()
+  - mapping: |
+      root.risk = if this.glucose.mean > 150 {
+        "hyperglycemia"
+      } else if this.glucose.mean < 150 {
+        "hypoglycemia"
+      }
+      root.bg = this.glucose.mean
+      root.ts = this.time
+      root.advice = this.advice
+      root = if this.glucose.mean > 70 && this.glucose.mean <= 180 { deleted() }
+output:
+  label: risks
+  kafka:
+    addresses: [ "${KAFKA_BROKER}" ]
+    tls:
+      enabled: true
+    sasl:
+      mechanism: "${KAFKA_SASL_MECHANISM}"
+      user: "${KAFKA_USERNAME}"
+      password: "${KAFKA_PASSWORD}"
+    topic: risk

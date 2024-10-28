@@ -1,0 +1,12 @@
+appName: vita
+namespace: vita
+
+image:
+  repository: docker.yesidlopez.de/vita
+  pullPolicy: IfNotPresent
+  tag: "1.0.4"
+
+service:
+  type: LoadBalancer
+  port: 8765
+
